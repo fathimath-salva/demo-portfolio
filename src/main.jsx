@@ -1,9 +1,9 @@
-﻿import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Award, BrainCircuit, Check, Code2, ExternalLink, Globe2, Layers3, Mail, MapPin, Menu, Send, Sparkles, Workflow, X } from 'lucide-react';
-import './style.css';
-import './redesign.css';
-import './motion.css';
+
+
+
 
 const projects = [
  {id:'nexora',n:'01',name:'Nexora',type:'Web',category:'Business analytics dashboard',desc:'Designed and developed a responsive dashboard to make everyday business data easier to explore.',tech:['React','JavaScript','REST APIs'],art:'chart',overview:'A full-stack learning project exploring clear data presentation and useful dashboard interactions.',problem:'Business information can be hard to scan when it is spread across dense tables and disconnected views.',approach:'Built a simple dashboard layout with summary cards, reusable charts and responsive navigation, then connected sample data through a REST API.',features:['Responsive overview and chart panels','Reusable data visualisation components','API driven sample activity feed'],learned:'Improved my understanding of data presentation, component structure and REST API integration.',outcome:'A complete responsive dashboard prototype that works across desktop and mobile.'},
@@ -51,9 +51,9 @@ function Art({type}) { return <div className={'r-art r-art-'+type} aria-label={t
 function Footer(){return <footer className="r-footer"><a className="r-brand" href="#home"><span className="r-mark">AM</span><span><b>ARJUN MALHOTRA</b><small>JUNIOR FULL-STACK DEVELOPER</small></span></a><p>Designed and built with care.</p><div><a href="#about">About</a><a href="#projects">Projects</a><a href="#contact">Contact</a></div><small>© 2026 Arjun Malhotra · Fictional portfolio concept</small></footer>}
 function App(){
  const [menu,setMenu]=useState(false),[filter,setFilter]=useState('All'),[modal,setModal]=useState(null),[caseId,setCaseId]=useState(null),[testimonial,setTestimonial]=useState(0),[form,setForm]=useState({name:'',email:'',type:'',message:''}),[sent,setSent]=useState(false),[scrolled,setScrolled]=useState(false);
- useEffect(()=>{const update=()=>{setScrolled(window.scrollY>20);const match=location.hash.match(/^#\/projects\/([a-z-]+)/);setCaseId(match?.[1]||null)};update();addEventListener('scroll',update);addEventListener('hashchange',update);return()=>{removeEventListener('scroll',update);removeEventListener('hashchange',update)}},[]);
+ useLayoutEffect(()=>{const update=()=>{setScrolled(window.scrollY>20);const match=location.hash.match(/^#\/projects\/([a-z-]+)/);setCaseId(match?.[1]||null)};update();addEventListener('scroll',update,{passive:true});addEventListener('hashchange',update);return()=>{removeEventListener('scroll',update);removeEventListener('hashchange',update)}},[]);
  useEffect(()=>{const close=e=>{if(e.key==='Escape')setMenu(false)};addEventListener('keydown',close);return()=>removeEventListener('keydown',close)},[]);
- useEffect(()=>{const items=document.querySelectorAll('.r-section,.r-case-head,.r-case-sections,.r-next');if(!('IntersectionObserver'in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){items.forEach(x=>x.classList.add('r-visible'));return}const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('r-visible');observer.unobserve(entry.target)}}),{threshold:.1,rootMargin:'0px 0px -35px 0px'});items.forEach(x=>{x.classList.add('r-reveal');observer.observe(x)});return()=>observer.disconnect()},[caseId]);
+ useLayoutEffect(()=>{const items=document.querySelectorAll('.r-section,.r-case-head,.r-case-sections,.r-next');if(!('IntersectionObserver'in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){items.forEach(x=>x.classList.add('r-visible'));return}const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('r-visible');observer.unobserve(entry.target)}}),{threshold:.1,rootMargin:'0px 0px -35px 0px'});items.forEach(x=>{x.classList.add('r-reveal');if(x.getBoundingClientRect().top<window.innerHeight){x.classList.add('r-visible')}else{observer.observe(x)}});return()=>observer.disconnect()},[caseId]);
  const visible=useMemo(()=>filter==='All'?projects:projects.filter(p=>p.type===filter),[filter]);
  const openCase=id=>{location.hash='/projects/'+id;window.scrollTo({top:0,behavior:'smooth'})};
  const backToProjects=()=>{location.hash='projects';setCaseId(null)};
@@ -74,4 +74,7 @@ function App(){
 }
 function CertModal({modal,close}){const [closing,setClosing]=useState(false);useEffect(()=>{if(!modal)return;const before=document.body.style.overflow;document.body.style.overflow='hidden';const key=e=>{if(e.key==='Escape')dismiss()};window.addEventListener('keydown',key);return()=>{document.body.style.overflow=before;window.removeEventListener('keydown',key)}},[modal]);if(!modal)return null;function dismiss(){if(closing)return;setClosing(true);window.setTimeout(close,280)}return <div className={'r-modal-backdrop '+(closing?'r-modal-closing':'')} onClick={dismiss}><section className="r-modal" role="dialog" aria-modal="true" aria-labelledby="r-cert-title" onClick={e=>e.stopPropagation()}><button onClick={dismiss} aria-label="Close certificate"><X/></button><div className="r-modal-icon"><Award/></div><small>LEARNING MILESTONE · {modal[2]}</small><h2 id="r-cert-title">{modal[0]}</h2><p>Presented by <b>{modal[1]}</b></p><i/><strong>DEMO PORTFOLIO CREDENTIAL</strong><span>Illustrative certificate preview · {modal[2]}</span></section></div>}
 createRoot(document.getElementById('root')).render(<App/>);
+
+
+
 
